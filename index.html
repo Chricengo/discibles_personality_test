@@ -24,7 +24,7 @@
       display:flex;
       align-items:flex-start;
       justify-content:center;
-      padding:12px; /* 手機友善的預設外側間距 */
+      padding:12px;
       color:#0f172a;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
@@ -168,7 +168,7 @@
     @media (max-width:480px){
       :root{ --base-font-size:15px; --base-line-height:1.4; }
       body{
-        padding:8px; /* 更小的外側間距 */
+        padding:8px;
       }
       .main{padding:12px}
       header h1{font-size:17px}
@@ -181,7 +181,6 @@
       .share-btn,.copy-btn{width:100%}
       .progress{height:8px}
       .choice-btn{padding:10px 10px;font-size:15px}
-      /* 防止內容貼到螢幕邊緣 */
       .shell{border-radius:10px; margin:6px 0}
     }
 
@@ -196,28 +195,40 @@
       text-align:left;
     }
 
-    /* share button */
-    .share-row{display:flex;gap:8px;align-items:center;margin-top:12px}
-    .share-btn{
-      display:inline-flex;
-      align-items:center;
+    /* share button module: center align content */
+    .share-row{
+      display:flex;
       gap:8px;
-      background:linear-gradient(90deg,var(--accent),#059669);
-      color:#fff;
+      align-items:center;
+      margin-top:12px;
+    }
+    .share-btn, .copy-btn{
+      display:flex;
+      align-items:center;
+      justify-content:center; /* 中央對齊文本和 icon */
+      gap:8px;
       padding:8px 12px;
       border-radius:8px;
-      border:0;
-      cursor:pointer;
       font-weight:700;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .share-btn{
+      background:linear-gradient(90deg,var(--accent),#059669);
+      color:#fff;
+      border:0;
       box-shadow:0 8px 22px rgba(6,95,70,0.12);
     }
     .copy-btn{
-      padding:8px 10px;
-      border-radius:8px;
+      background:#fff;
       border:1px solid rgba(15,23,42,0.06);
-      background:white;
-      cursor:pointer;
-      font-weight:700;
+      color:var(--muted);
+    }
+
+    /* ensure full-width on small screens */
+    @media (max-width:480px){
+      .share-btn,.copy-btn{width:100%; justify-content:center}
     }
   </style>
 </head>
@@ -324,19 +335,24 @@
             <!-- LEGO title + description will be injected by script -->
           </div>
 
-          <!-- Result footer (you can change sizing as needed) -->
-          <div class="result-footer" id="result-footer" tabindex="0" aria-label="活動資訊（可捲動）" style="margin-top:12px;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.04);background:#ffffff;color:var(--muted);font-size:20px;line-height:1.45;max-height:200px;overflow:auto;">
+          <!-- Result footer -->
+          <div class="result-footer" id="result-footer" tabindex="0" aria-label="活動資訊（可捲動）" style="margin-top:12px;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.04);background:#ffffff;color:var(--muted);font-size:14px;line-height:1.45;max-height:200px;overflow:auto;">
             <p style="margin:0 0 8px 0;font-weight:1000;">
               LEGO 自癒工作坊<br>
               6/9/2025 4:30pm - 6:00pm<br>
               歡迎你分享這個測驗，邀請朋友參加！
             </p>
-          </div>
+           </div>
 
-          <!-- Share area -->
-          <div class="share-row" aria-label="分享測驗" style="margin-top:12px;display:flex;gap:8px;align-items:center;">
-            <button class="share-btn" id="share-btn" type="button" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--accent),#059669);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700;">分享測驗</button>
-            <button class="copy-btn" id="copy-link" type="button" style="padding:8px 10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:white;cursor:pointer;font-weight:700;">複製連結</button>
+          <!-- Share area (buttons centered) -->
+          <div class="share-row" aria-label="分享測驗">
+            <button class="share-btn" id="share-btn" type="button" aria-label="分享測驗">
+              <!-- 可放 icon 在此 -->
+              <span>分享測驗</span>
+            </button>
+            <button class="copy-btn" id="copy-link" type="button" aria-label="複製連結">
+              <span>複製連結</span>
+            </button>
           </div>
         </div>
 
@@ -375,10 +391,9 @@
     (function(){
       // state
       const total = 5;
-      const answers = { 2:null, 3:null, 4:null }; // section 1 is intro, 5 is result
+      const answers = { 2:null, 3:null, 4:null };
       let current = 1;
 
-      // helpers
       function show(step){
         for(let i=1;i<=5;i++){
           const el = document.getElementById('s'+i);
@@ -427,28 +442,27 @@
       const next4 = document.getElementById('to-5');
       next2.addEventListener('click', ()=> show(3));
       next3.addEventListener('click', ()=> show(4));
-      next4.addEventListener('click', ()=> {
+      next4 && next4.addEventListener('click', ()=> {
         renderFinal();
         show(5);
       });
 
       function disableNext(step){
-        if(step===2) next2.disabled = true;
-        if(step===3) next3.disabled = true;
-        if(step===4) next4.disabled = true;
+        if(step===2 && next2) next2.disabled = true;
+        if(step===3 && next3) next3.disabled = true;
+        if(step===4 && next4) next4.disabled = true;
       }
       function enableNext(step){
-        if(step===2) next2.disabled = false;
-        if(step===3) next3.disabled = false;
-        if(step===4) next4.disabled = false;
+        if(step===2 && next2) next2.disabled = false;
+        if(step===3 && next3) next3.disabled = false;
+        if(step===4 && next4) next4.disabled = false;
       }
 
-      // initialize next-disabled
       try { disableNext(2); disableNext(3); disableNext(4); } catch(e){}
 
       // choice buttons
       document.querySelectorAll('.choice-btn').forEach(btn=>{
-        btn.addEventListener('click', (e)=>{
+        btn.addEventListener('click', ()=>{
           const step = Number(btn.dataset.step);
           const val = btn.dataset.value;
           document.querySelectorAll('.choice-btn[data-step="'+step+'"]').forEach(b=>{
@@ -463,7 +477,6 @@
         });
       });
 
-      // render final content when reaching section 5
       function renderFinal(){
         const vals = [answers[2], answers[3], answers[4]].map(v=>v||'0');
         let score1 = vals.filter(v=>v==='1').length;
@@ -484,15 +497,12 @@
             </p>
           </div>
         `;
-
-        // update aside summary
         const sideTitle = document.getElementById('side-title');
         const sideText = document.getElementById('side-text');
         sideTitle.textContent = '完成：簡短摘要';
         sideText.textContent = `你選擇了 ${score1} 個「1」與 ${score2} 個「2」。參與 LEGO 自癒工作坊可進一步探索與療癒。`;
       }
 
-      // reset function
       function resetAll(){
         for(const k in answers) answers[k]=null;
         document.querySelectorAll('.choice-btn.selected').forEach(b=>b.classList.remove('selected'));
@@ -503,18 +513,16 @@
         show(1);
       }
 
-      // share functionality
+      // share & copy
       const shareBtn = document.getElementById('share-btn');
       const copyBtn = document.getElementById('copy-link');
 
-      // Compose a simple share message and URL (uses current page URL)
       function getSharePayload(){
         const url = window.location.href;
         const text = encodeURIComponent('我剛完成「你的理想人生」的性格測試！一起試試看： ' + url);
         return { url, text };
       }
 
-      // Web Share API where available
       if(shareBtn){
         shareBtn.addEventListener('click', async ()=>{
           const payload = getSharePayload();
@@ -532,7 +540,6 @@
         });
       }
 
-      // copy link to clipboard
       if(copyBtn){
         copyBtn.addEventListener('click', ()=>{
           const payload = getSharePayload();
@@ -561,11 +568,9 @@
         document.body.removeChild(ta);
       }
 
-      // initialize
       updateProgress();
       updateMeta();
 
-      // keyboard accessibility: allow Enter/Space to activate choice buttons
       document.addEventListener('keydown', function(e){
         const active = document.activeElement;
         if(active && active.classList && active.classList.contains('choice-btn')){
