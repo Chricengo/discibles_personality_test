@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>性格測試 -- LEGO 自癒工作坊</title>
+  <title>你的理想人生 -- 性格測試</title>
   <style>
     :root{
       --bg:#f6fbff;
@@ -222,7 +222,7 @@
   </style>
 </head>
 <body>
-  <div class="shell" role="application" aria-label="性格測試 -- LEGO 自癒工作坊">
+  <div class="shell" role="application" aria-label="你的理想人生 -- 性格測試">
     <main class="main" aria-live="polite">
 
       <header>
@@ -510,7 +510,7 @@
       // Compose a simple share message and URL (uses current page URL)
       function getSharePayload(){
         const url = window.location.href;
-        const text = encodeURIComponent('我剛完成「LEGO 自癒工作坊」的性格測試！一起試試看： ' + url);
+        const text = encodeURIComponent('我剛完成「你的理想人生」的性格測試！一起試試看： ' + url);
         return { url, text };
       }
 
@@ -520,7 +520,7 @@
           const payload = getSharePayload();
           if(navigator.share){
             try{
-              await navigator.share({ title: 'LEGO 自癒工作坊 -- 性格測試', text: decodeURIComponent(payload.text), url: payload.url });
+              await navigator.share({ title: '你的理想人生 -- 性格測試', text: decodeURIComponent(payload.text), url: payload.url });
             }catch(err){
               alert('分享未完成，將連結複製到剪貼簿。');
               copyToClipboard(payload.url);
